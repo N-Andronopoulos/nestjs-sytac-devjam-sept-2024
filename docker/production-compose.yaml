@@ -1,0 +1,53 @@
+name: "nestjs-sytac-devjam-sept-2024"
+services:
+  api:
+    build:
+      context: ../
+      dockerfile: docker/api/Dockerfile
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=api_prod
+      - DB_USER=api_user
+      - DB_PASS=api_pass
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: '512M'
+    healthcheck:
+      test: node -e 'Number(fetch("http://localhost:3000/api/v1/health").then(res => { if (res.status !== 200) process.exit(1); else process.exit(0) }))'
+      start_period: 10s
+      interval: 5m
+      retries: 2
+    depends_on:
+      - mysql
+  mysql:
+    image: mysql:8
+    environment:
+      - MYSQL_ROOT_PASSWORD=lookaway
+      - MYSQL_DATABASE=api_prod
+      - MYSQL_USER=api_user
+      - MYSQL_PASSWORD=api_pass
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: '1G'
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u root --password=MYSQL_ROOT_PASSWORD
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 55
+
+volumes:
+  mysql_data:

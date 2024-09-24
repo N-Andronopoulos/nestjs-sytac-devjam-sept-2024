@@ -1,0 +1,22 @@
+name: "nestjs-sytac-devjam-sept-2024-dev"
+services:
+  mysql:
+    image: mysql:8
+    environment:
+      - MYSQL_ROOT_PASSWORD=lookaway
+      - MYSQL_DATABASE=api_dev
+      - MYSQL_USER=api_dev
+      - MYSQL_PASSWORD=api_dev
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: '1G'
+
+volumes:
+  mysql_data:
