@@ -7,9 +7,10 @@ import {
   VersioningType,
 } from '@nestjs/common';
 import {
-  version as packageVersion,
   description as packageDescription,
+  version as packageVersion,
 } from '../package.json';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -28,6 +29,8 @@ async function bootstrap() {
     type: VersioningType.URI,
     defaultVersion: '1',
   });
+  // express middleware
+  app.use(helmet());
 
   // region Swagger
   const config = new DocumentBuilder()
